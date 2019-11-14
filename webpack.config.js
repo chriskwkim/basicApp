@@ -16,8 +16,11 @@ var config = {
     vendor: VENDOR_LIBS
   },
   output: {
-    path: BUILD_DIR,
-    filename: '[name].[hash].js'
+    // path: BUILD_DIR,
+    // filename: '[name].[hash].js'
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[hash].js',
+    publicPath: '/'
   },
   module: {
     rules: [
@@ -25,7 +28,14 @@ var config = {
         test: /\.(js|jsx)$/,
         // include: APP_DIR,
         exclude: /node_modules/,
-        use: 'babel-loader'
+        use: {
+            loader: 'babel-loader',
+            options: {
+                babelrc: false,
+                presets: ["babel-preset-env", "react", "stage-2"],
+                plugins: ['syntax-dynamic-import']
+            }
+        }
       },
       {
         test: /\.css$/,
@@ -67,7 +77,10 @@ var config = {
     new htmlWebpackPlugin({
       template: 'index.html'
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+        'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    })
   ]
 }
 
